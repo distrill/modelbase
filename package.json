@@ -1,5 +1,5 @@
 {
-  "name": "modelbase",
+  "name": "bh-modelbase",
   "version": "1.0.0",
   "description": "Base model for use with the incredible knex query builder",
   "main": "index.js",
