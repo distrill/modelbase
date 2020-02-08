@@ -1,0 +1,36 @@
+{
+  "name": "modelbase",
+  "version": "1.0.0",
+  "description": "Base model for use with the incredible knex query builder",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/distrill/modelbase.git"
+  },
+  "keywords": [
+    "knex",
+    "model",
+    "base",
+    "basemodel",
+    "modelbase"
+  ],
+  "author": "Brent Hamilton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/distrill/modelbase/issues"
+  },
+  "homepage": "https://github.com/distrill/modelbase#readme",
+  "dependencies": {
+    "lodash": "^4.17.15"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.18.3"
+  }
+}
