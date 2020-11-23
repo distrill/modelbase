@@ -5,7 +5,7 @@ export default class ModelBase<T> {
   constructor(
     private db: (table: string) => QueryBuilder,
     private table: string,
-    private upsertConflictKeys: string[],
+    private upsertConflictKeys?: string[],
   ) {}
 
   camelKeys(entity: Partial<T>) {
@@ -40,6 +40,9 @@ export default class ModelBase<T> {
   }
 
   async upsert(entity: Partial<T>) : Promise<T>{
+    if (!this.upsertConflictKeys) {
+      throw new Error('upsert conflict keys must be specified to use upsert function');
+    }
     const where: Partial<T> = pick(entity, this.upsertConflictKeys);
     const found = await this.fetchOne(where);
     if (found) return this.update(where, entity);
