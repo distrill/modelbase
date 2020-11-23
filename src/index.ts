@@ -16,8 +16,12 @@ export default class ModelBase<T> {
     return mapKeys(entity, (_, k) => snakeCase(k));
   }
 
-  async fetchAll(where: Partial<T>): Promise<T[]> {
-    const records = await this.db(this.table).where(this.snakeKeys(where));
+  async fetchAll(where: Partial<T> | undefined): Promise<T[]> {
+    let query = this.db(this.table);
+    if (where) {
+      query = query.where(this.snakeKeys(where));
+    }
+    const records = await query;
     return records.map(this.camelKeys);
   }
 
