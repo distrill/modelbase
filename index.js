@@ -1,4 +1,4 @@
-const _ = require('lodash');
+const { camelCase, snakeCase, mapKeys, first, pick } = require('lodash');
 
 class BaseModel {
   constructor({ db, table, upsertConflictKeys }) {
@@ -8,11 +8,11 @@ class BaseModel {
   }
 
   static camelKeys(entity) {
-    return _.mapKeys(entity, _.camelCase);
+    return mapKeys(entity, (_, k) => camelCase(k));
   }
 
   static snakeKeys(entity) {
-    return _.mapKeys(entity, _.snakeCase);
+    return mapKeys(entity, (_, k) => snakeCase(k));
   }
 
   async fetchAll(where) {
@@ -23,7 +23,7 @@ class BaseModel {
   async fetchOne(where) {
     // do we care about too many records?
     // this blindly returns the first one
-    return this.fetchAll(where).then(_.first);
+    return this.fetchAll(where).then(first);
   }
 
   async create(entity) {
@@ -38,7 +38,7 @@ class BaseModel {
   }
 
   async upsert(entity) {
-    const where = _.pick(entity, this.upsertConflictKeys);
+    const where = pick(entity, this.upsertConflictKeys);
     const found = await this.fetchOne(where);
     if (found) return this.update(where, entity);
     return this.create(entity);
