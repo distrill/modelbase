@@ -1,10 +1,13 @@
 {
   "name": "bh-modelbase",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Base model for use with the incredible knex query builder",
-  "main": "index.js",
+  "main": "buid/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node_modules/.bin/tsc",
+    "watch": "yarn run build --watch"
   },
   "repository": {
     "type": "git",
@@ -24,10 +27,15 @@
   },
   "homepage": "https://github.com/distrill/modelbase#readme",
   "dependencies": {
-    "lodash": "^4.17.15"
+    "@tsconfig/recommended": "^1.0.1",
+    "@types/knex": "^0.16.1",
+    "@types/lodash": "^4.14.165",
+    "@types/node": "^14.14.9",
+    "knex": "^0.21.12",
+    "lodash": "^4.17.15",
+    "typescript": "^4.1.2"
   },
   "devDependencies": {
-    "eslint": "^7.14.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-jsx-a11y": "^6.2.3",
