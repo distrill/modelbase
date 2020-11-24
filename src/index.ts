@@ -1,9 +1,11 @@
 import { QueryBuilder } from 'knex';
 import { camelCase, snakeCase, mapKeys, first, pick } from 'lodash';
 
+export type Connection = (_t: string) => QueryBuilder;
+
 export default class ModelBase<T> {
   constructor(
-    private db: (table: string) => QueryBuilder,
+    private db: Connection,
     private table: string,
     private upsertConflictKeys?: string[],
   ) {}
@@ -16,7 +18,7 @@ export default class ModelBase<T> {
     return mapKeys(entity, (_, k) => snakeCase(k));
   }
 
-  async fetchAll(where: Partial<T> | undefined): Promise<T[]> {
+  async fetchAll(where?: Partial<T>): Promise<T[]> {
     let query = this.db(this.table);
     if (where) {
       query = query.where(this.snakeKeys(where));
@@ -53,3 +55,5 @@ export default class ModelBase<T> {
     return this.create(entity);
   }
 }
+
+
