@@ -42,7 +42,7 @@ export default class ModelBase<T> {
     await this.db(this.table)
       .update(this.snakeKeys(what))
       .where(this.snakeKeys(where));
-    return this.db(this.table).where(where);
+    return this.db(this.table).where(this.snakeKeys(where));
   }
 
   async upsert(entity: Partial<T>) : Promise<T>{
