@@ -42,7 +42,11 @@ export default class ModelBase<T> {
     await this.db(this.table)
       .update(this.snakeKeys(what))
       .where(this.snakeKeys(where));
-    return this.db(this.table).where(this.snakeKeys(where));
+    const updated = await this.fetchOne(where);
+    if (!updated) {
+      throw new Error('Entity cannot be null');
+    }
+    return updated;
   }
 
   async upsert(entity: Partial<T>) : Promise<T>{
