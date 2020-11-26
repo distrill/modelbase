@@ -5,9 +5,9 @@ export type Connection = (_t: string) => QueryBuilder;
 
 export default class ModelBase<T> {
   constructor(
-    private db: Connection,
-    private table: string,
-    private upsertConflictKeys?: string[],
+    public db: Connection,
+    public table: string,
+    public upsertConflictKeys?: string[],
   ) {}
 
   camelKeys(entity: Partial<T>) {
