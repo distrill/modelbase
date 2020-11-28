@@ -1,21 +1,23 @@
-import { QueryBuilder } from 'knex';
+import * as Knex from 'knex';
 import { camelCase, snakeCase, mapKeys, first, pick } from 'lodash';
-
-export type Connection = (_t: string) => QueryBuilder;
 
 export default class ModelBase<T> {
   constructor(
-    protected db: Connection,
+    protected db: Knex,
     protected table: string,
     protected upsertConflictKeys?: string[],
   ) {}
 
-  camelKeys(entity: Partial<T>) {
-    return mapKeys(entity, (_, k) => camelCase(k));
+  camelKeys(entity: any): T {
+    return Object.keys(entity).reduce((accum, key) => {
+      return { ...accum, [camelCase(key)]: entity[key] };
+    }, {} as T);
   }
 
-  snakeKeys(entity: Partial<T>) {
-    return mapKeys(entity, (_, k) => snakeCase(k));
+  snakeKeys(entity: any): T {
+    return Object.keys(entity).reduce((accum, key) => {
+      return { ...accum, [snakeCase(key)]: entity[key] };
+    }, {} as T);
   }
 
   async fetchAll(where?: Partial<T>): Promise<T[]> {
