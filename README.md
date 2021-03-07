@@ -7,7 +7,7 @@ Typed base model for use with the incredible knex query builder: https://knexjs.
 ### usage
 ``` typescript
 // store_model.ts
-import BhBaseModel from 'bh-modelbase';
+import BaseModel from 'bh-modelbase';
 import initDB from '../../lib/db';
 
 type Store = {
