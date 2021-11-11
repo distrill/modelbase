@@ -1,5 +1,5 @@
-import * as Knex from 'knex';
-import { camelCase, snakeCase, mapKeys, first, pick } from 'lodash';
+import {Knex} from 'knex';
+import { camelCase, snakeCase, first, pick } from 'lodash';
 
 export default class ModelBase<T> {
   constructor(
