@@ -25,8 +25,7 @@ export default class ModelBase<T> {
     if (where) {
       query = query.where(this.snakeKeys(where));
     }
-    const records = await query;
-    return records.map(this.camelKeys);
+    return (await query).map(this.camelKeys);
   }
 
   async fetchOne(where: Partial<T>): Promise<T | undefined> {
