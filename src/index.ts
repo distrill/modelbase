@@ -20,60 +20,60 @@ export default class ModelBase<T> {
     }, {} as T);
   }
 
-  async fetchAll(where?: Partial<T>): Promise<T[]> {
-    let query = this.db(this.table);
+  async fetchAll(where?: Partial<T>, trx = this.db): Promise<T[]> {
+    let query = trx(this.table);
     if (where) {
       query = query.where(this.snakeKeys(where));
     }
     return (await query).map(this.camelKeys);
   }
 
-  async fetchOne(where: Partial<T>): Promise<T | undefined> {
+  async fetchOne(where: Partial<T>, trx = this.db): Promise<T | undefined> {
     // do we care about too many records?
     // this blindly returns the first one
-    return this.fetchAll(where).then(first);
+    return this.fetchAll(where, trx).then(first);
   }
 
-  async create(entity: Partial<T>): Promise<T> {
-    await this.db(this.table).insert(this.snakeKeys(entity));
+  async create(entity: Partial<T>, trx = this.db): Promise<T> {
+    await trx(this.table).insert(this.snakeKeys(entity));
     return entity as T;
   }
 
-  async update(where: Partial<T>, what: Partial<T>): Promise<T> {
-    await this.db(this.table)
+  async update(where: Partial<T>, what: Partial<T>, trx = this.db): Promise<T> {
+    await trx(this.table)
       .update(this.snakeKeys(what))
       .where(this.snakeKeys(where));
-    const updated = await this.fetchOne(where);
+    const updated = await this.fetchOne(where, trx);
     if (!updated) {
       throw new Error('Entity cannot be null');
     }
     return updated;
   }
 
-  async upsert(entity: Partial<T>) : Promise<T> {
+  async upsert(entity: Partial<T>, trx = this.db) : Promise<T> {
     if (!this.upsertConflictKeys) {
       throw new Error('upsert conflict keys must be specified to use upsert function');
     }
     const where: Partial<T> = pick(entity, this.upsertConflictKeys);
-    const found = await this.fetchOne(where);
-    if (found) return this.update(where, entity);
-    return this.create(entity);
+    const found = await this.fetchOne(where, trx);
+    if (found) return this.update(where, entity, trx);
+    return this.create(entity, trx);
   }
 
-  async removeOne(where: Partial<T>): Promise<T> {
-    const toRemove = await this.fetchAll(where);     
+  async removeOne(where: Partial<T>, trx = this.db): Promise<T> {
+    const toRemove = await this.fetchAll(where, trx);
     if (toRemove.length !== 1) {
       throw new Error(`removeOne may only remove a single record. query returned ${toRemove.length}`);
     }
-    await this.db(this.table)
+    await trx(this.table)
       .where(this.snakeKeys(where))
       .del()
     return toRemove[0];
   }
 
-  async removeAll(where: Partial<T>): Promise<T[]> {
-    const toRemove = await this.fetchAll(where);     
-    await this.db(this.table)
+  async removeAll(where: Partial<T>, trx = this.db): Promise<T[]> {
+    const toRemove = await this.fetchAll(where, trx);     
+    await trx(this.table)
       .where(this.snakeKeys(where))
       .del()
     return toRemove;
