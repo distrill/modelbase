@@ -2,7 +2,7 @@ import {Knex} from 'knex';
 import { camelCase, snakeCase, first, pick } from 'lodash';
 
 export type TBaseModelConfig = {
-  trx: Knex,
+  trx?: Knex,
 };
 
 export default class ModelBase<T> {
