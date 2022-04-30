@@ -1,7 +1,7 @@
 import {Knex} from 'knex';
 import { camelCase, snakeCase, first, pick } from 'lodash';
 
-type TConfig = {
+export type TModelbaseConfig = {
   trx: Knex,
 };
 
@@ -26,7 +26,7 @@ export default class ModelBase<T> {
 
   async fetchAll(
     where?: Partial<T>,
-    config: TConfig & {
+    config: TModelbaseConfig & {
       order?: {
         [key: string]: 'asc' | 'desc',
       },
@@ -46,13 +46,13 @@ export default class ModelBase<T> {
     return (await query).map(this.camelKeys);
   }
 
-  async fetchOne(where: Partial<T>, config: TConfig): Promise<T | undefined> {
+  async fetchOne(where: Partial<T>, config: TModelbaseConfig): Promise<T | undefined> {
     // do we care about too many records?
     // this blindly returns the first one
     return this.fetchAll(where, config).then(first);
   }
 
-  async create(entity: Partial<T>, config: TConfig = {trx: this.db}): Promise<T> {
+  async create(entity: Partial<T>, config: TModelbaseConfig = {trx: this.db}): Promise<T> {
     await config.trx(this.table).insert(this.snakeKeys(entity));
     return entity as T;
   }
@@ -60,7 +60,7 @@ export default class ModelBase<T> {
   async update(
     where: Partial<T>,
     what: Partial<T>,
-    config: TConfig = {trx: this.db}
+    config: TModelbaseConfig = {trx: this.db}
   ): Promise<T> {
     await config.trx(this.table)
       .update(this.snakeKeys(what))
@@ -72,7 +72,7 @@ export default class ModelBase<T> {
     return updated;
   }
 
-  async upsert(entity: Partial<T>, config: TConfig = {trx: this.db}) : Promise<T> {
+  async upsert(entity: Partial<T>, config: TModelbaseConfig = {trx: this.db}) : Promise<T> {
     if (!this.upsertConflictKeys) {
       throw new Error('upsert conflict keys must be specified to use upsert function');
     }
@@ -82,7 +82,7 @@ export default class ModelBase<T> {
     return this.create(entity, config);
   }
 
-  async removeOne(where: Partial<T>, config: TConfig = {trx: this.db}): Promise<T> {
+  async removeOne(where: Partial<T>, config: TModelbaseConfig = {trx: this.db}): Promise<T> {
     const toRemove = await this.fetchAll(where, config);
     if (toRemove.length !== 1) {
       throw new Error(`removeOne may only remove a single record. query returned ${toRemove.length}`);
@@ -93,7 +93,7 @@ export default class ModelBase<T> {
     return toRemove[0];
   }
 
-  async removeAll(where: Partial<T>, config: TConfig = {trx: this.db}): Promise<T[]> {
+  async removeAll(where: Partial<T>, config: TModelbaseConfig = {trx: this.db}): Promise<T[]> {
     const toRemove = await this.fetchAll(where, config);     
     await config.trx(this.table)
       .where(this.snakeKeys(where))

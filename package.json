@@ -1,6 +1,6 @@
 {
   "name": "bh-modelbase",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Base model for use with the incredible knex query builder",
   "main": "build/index.js",
   "types": "build/index.d.ts",
