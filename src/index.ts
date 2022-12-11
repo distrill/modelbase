@@ -63,16 +63,24 @@ export default class ModelBase<T> {
     where: Partial<T>,
     what: Partial<T>,
     config?: TBaseModelConfig,
-  ): Promise<T> {
+  ): Promise<Array<T>> {
     const trx = config?.trx ?? this.db;
-    await trx(this.table)
+    const updated = await trx(this.table)
       .update(this.snakeKeys(what))
       .where(this.snakeKeys(where));
-    const updated = await this.fetchOne(where, config);
-    if (!updated) {
-      throw new Error('Entity cannot be null');
+    return updated.map(this.camelKeys);
+  }
+
+  async updateOne(
+    where: Partial<T>,
+    what: Partial<T>,
+    config?: TBaseModelConfig,
+  ): Promise<T> {
+    const updated = await this.update(where, what, config);
+    if (updated.length !== 1) {
+      throw new Error(`expected single entity, got ${updated}`)
     }
-    return updated;
+    return updated[0];
   }
 
   async upsert(entity: Partial<T>, config?: TBaseModelConfig) : Promise<T> {
@@ -81,7 +89,7 @@ export default class ModelBase<T> {
     }
     const where: Partial<T> = pick(entity, this.upsertConflictKeys);
     const found = await this.fetchOne(where, config);
-    if (found) return this.update(where, entity, config);
+    if (found) return this.updateOne(where, entity, config);
     return this.create(entity, config);
   }
 
