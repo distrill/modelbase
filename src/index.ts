@@ -60,16 +60,18 @@ export default class ModelBase<T> {
   }
 
   async update(
-    where: Partial<T>,
+    where: Partial<T> | null,
     what: Partial<T>,
     config?: TBaseModelConfig,
   ): Promise<Array<T>> {
     const trx = config?.trx ?? this.db;
-    const updated = await trx(this.table)
+    let query = trx(this.table)
       .update(this.snakeKeys(what))
-      .where(this.snakeKeys(where) as Partial<T>)
-      .returning('*')
-    return updated.map(this.camelKeys);
+      .returning('*');
+    if (where != null) {
+      query = query.where(this.snakeKeys(where) as Partial<T>) ;
+    }
+    return query.then(updated => updated.map(this.camelKeys));
   }
 
   async updateOne(
