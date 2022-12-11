@@ -35,7 +35,7 @@ export default class ModelBase<T> {
     const trx = config?.trx ?? this.db;
     let query = trx(this.table);
     if (where != null) {
-      query = query.where(this.snakeKeys(where));
+      query = query.where(this.snakeKeys(where) as Partial<T>);
     }
     if (config?.order != null) {
       const orderBy = Object.keys(config.order).map((column) => ({
@@ -67,7 +67,8 @@ export default class ModelBase<T> {
     const trx = config?.trx ?? this.db;
     const updated = await trx(this.table)
       .update(this.snakeKeys(what))
-      .where(this.snakeKeys(where));
+      .where(this.snakeKeys(where) as Partial<T>)
+      .returning('*')
     return updated.map(this.camelKeys);
   }
 
@@ -100,7 +101,7 @@ export default class ModelBase<T> {
       throw new Error(`removeOne may only remove a single record. query returned ${toRemove.length}`);
     }
     await trx(this.table)
-      .where(this.snakeKeys(where))
+      .where(this.snakeKeys(where) as Partial<T>)
       .del()
     return toRemove[0];
   }
@@ -109,7 +110,7 @@ export default class ModelBase<T> {
     const trx = config?.trx ?? this.db;
     const toRemove = await this.fetchAll(where, config);     
     await trx(this.table)
-      .where(this.snakeKeys(where))
+      .where(this.snakeKeys(where) as Partial<T>)
       .del()
     return toRemove;
   }
